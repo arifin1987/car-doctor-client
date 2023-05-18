@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../providers/AuthProvider';
 import BookingRow from './BookingRow';
+import { useNavigate } from 'react-router-dom';
 
 const Bookings = () => {
   const { user } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
+  const navigate = useNavigate();
   const url = `http://localhost:5000/bookings?email=${user?.email}`;
   useEffect(() => {
     fetch(url,{
@@ -14,8 +16,17 @@ const Bookings = () => {
       }
     })
       .then(res => res.json())
-      .then(data => setBookings(data))
-  }, [url])
+      .then(data =>{
+        if(!data.error){
+          setBookings(data)
+        }
+        else{
+          navigate('/');
+        }
+        
+
+      } )
+  }, [url,navigate])
 
   const handleDelete = id => {
     const proceed = confirm('Are you sure you want to delete')
